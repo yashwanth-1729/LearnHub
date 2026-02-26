@@ -54,7 +54,7 @@ export default function CourseCard({ course }: { course: Course }) {
           </div>
           <button className="text-xs font-semibold px-3 py-2 rounded-lg transition-all"
             style={{background:course.comingSoon?"transparent":`${course.color}20`,color:course.comingSoon?"#5A5A70":course.color,border:`1px solid ${course.comingSoon?"#2A2A32":`${course.color}40`}`,cursor:"none"}}>
-            {course.comingSoon ? "Notify me" : "Start learning \u2192"}
+            {course.comingSoon ? "Notify me" : <>Start learning &#8594;</>}
           </button>
         </div>
       </div>

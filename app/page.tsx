@@ -31,14 +31,14 @@ export default function Home() {
           <p className="fu3 text-lg text-muted leading-relaxed max-w-2xl mx-auto mb-10">
             Project-based courses built for developers who want to go from{" "}
             <em className="text-white not-italic font-medium">concept</em>{" "}to{" "}
-            <em className="text-white not-italic font-medium">shipped</em>{" "}
-            \u2014 fast.
+            <em className="text-white not-italic font-medium">shipped</em>
+            {" "}&#8212;{" "}fast.
           </p>
           <div className="fu4 flex items-center justify-center gap-4 mb-16">
             <button className="btn-primary-hero">Explore courses</button>
             <button style={{cursor:"none",background:"none",border:"none",color:"#5A5A70",fontSize:"13px",fontFamily:"DM Sans,sans-serif"}}
               className="hover:text-white transition-colors">
-              See learning paths \u2192
+              See learning paths &#8594;
             </button>
           </div>
           <div className="fu5 flex items-center justify-center gap-10 md:gap-16">
