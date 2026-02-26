@@ -1,0 +1,225 @@
+export type Lesson  = { id:string; title:string; duration:string; free?:boolean; description?:string; };
+export type Module  = { id:string; title:string; description:string; lessons:Lesson[]; };
+export type Course  = {
+  slug:string; title:string; tagline:string; description:string;
+  instructor:string; instructorRole:string; instructorBio:string;
+  level:"Beginner"|"Intermediate"|"Advanced";
+  duration:string; lessons:number; rating:number; students:number;
+  tags:string[]; color:string; icon:string; comingSoon?:boolean;
+  whatYouLearn:string[];
+  requirements:string[];
+  modules:Module[];
+};
+
+export const courses: Course[] = [
+  {
+    slug: "python-fundamentals",
+    title: "Python Fundamentals",
+    tagline: "From zero to Pythonista",
+    description: "A complete beginner-friendly Python course covering everything from your very first script all the way to building a real-world CLI application. Learn the language used by data scientists, web developers, and automation engineers worldwide.",
+    instructor: "Arjun Mehta",
+    instructorRole: "Senior Software Engineer at Google",
+    instructorBio: "Arjun has 10+ years of Python experience, contributed to CPython, and has taught over 50,000 students online. He specializes in writing code that is both readable and efficient.",
+    level: "Beginner",
+    duration: "12h 30m",
+    lessons: 48,
+    rating: 4.9,
+    students: 18400,
+    tags: ["Python", "Programming", "Backend"],
+    color: "#FFD43B",
+    icon: "\uD83D\uDC0D",
+    whatYouLearn: [
+      "Write Python programs from scratch with confidence",
+      "Understand variables, data types, and operators",
+      "Control program flow with conditionals and loops",
+      "Write reusable code using functions and modules",
+      "Work with lists, dictionaries, tuples, and sets",
+      "Apply object-oriented programming with classes",
+      "Read from and write to files, parse JSON data",
+      "Handle errors gracefully with try/except blocks",
+      "Build a fully functional CLI Todo application",
+    ],
+    requirements: [
+      "No prior programming experience needed",
+      "A computer running Windows, Mac, or Linux",
+      "Python 3.10 or higher (free to download)",
+      "A text editor such as VS Code (free)",
+    ],
+    modules: [
+      {
+        id: "m1",
+        title: "Getting Started with Python",
+        description: "Set up your environment and write your very first Python program.",
+        lessons: [
+          { id:"l1",  title:"Welcome to the Course",          duration:"5m",  free:true,  description:"Overview of what we will build and learn together. A quick tour of the course structure." },
+          { id:"l2",  title:"Installing Python and VS Code",  duration:"8m",  free:true,  description:"Step-by-step installation guide for Python 3 and Visual Studio Code on Windows, Mac, and Linux." },
+          { id:"l3",  title:"Your First Python Script",       duration:"7m",  free:true,  description:"Write and run your first Python program. Understand how the Python interpreter executes code line by line." },
+          { id:"l4",  title:"How Python Works Internally",    duration:"9m",  free:true,  description:"CPython, bytecode, and the interpreter loop explained simply. Why Python is both easy to learn and powerful." },
+        ],
+      },
+      {
+        id: "m2",
+        title: "Variables and Data Types",
+        description: "Learn how Python stores and works with different kinds of data.",
+        lessons: [
+          { id:"l5",  title:"Variables and Assignment",       duration:"11m", description:"How to create variables, naming rules, and how Python manages memory automatically." },
+          { id:"l6",  title:"Strings: Creation and Methods",  duration:"14m", description:"String literals, multi-line strings, f-strings, and the most useful built-in string methods." },
+          { id:"l7",  title:"Numbers: int, float, complex",   duration:"10m", description:"Integer vs floating point, arithmetic operators, integer division, modulo, and the math module." },
+          { id:"l8",  title:"Booleans and Comparisons",       duration:"9m",  description:"True and False, comparison operators, logical operators (and, or, not), and truthiness in Python." },
+          { id:"l9",  title:"Type Conversion",                duration:"8m",  description:"int(), str(), float(), bool() and when you need them. Common pitfalls to avoid." },
+        ],
+      },
+      {
+        id: "m3",
+        title: "Control Flow",
+        description: "Make your programs smart by responding to conditions and repeating tasks.",
+        lessons: [
+          { id:"l10", title:"if, elif, and else",             duration:"12m", description:"Writing conditional logic, nesting conditions, and the one-line ternary expression." },
+          { id:"l11", title:"for Loops and range()",          duration:"13m", description:"Iterating over sequences, the range() function, enumerate(), and zip()." },
+          { id:"l12", title:"while Loops",                    duration:"10m", description:"When to use while instead of for, infinite loops, and writing safe exit conditions." },
+          { id:"l13", title:"break, continue, and pass",      duration:"8m",  description:"Fine-grained control over loop execution and when to use each statement." },
+          { id:"l14", title:"Nested Loops and Patterns",      duration:"11m", description:"Practical examples of nested loops including printing patterns and working with 2D data." },
+        ],
+      },
+      {
+        id: "m4",
+        title: "Functions and Scope",
+        description: "Write clean, reusable blocks of code that you can call anywhere.",
+        lessons: [
+          { id:"l15", title:"Defining and Calling Functions", duration:"12m", description:"The def keyword, function anatomy, calling conventions, and writing a docstring." },
+          { id:"l16", title:"Parameters and Return Values",   duration:"14m", description:"Positional, keyword, default, and *args/**kwargs parameters. Returning multiple values." },
+          { id:"l17", title:"Variable Scope: LEGB Rule",      duration:"11m", description:"Local, Enclosing, Global, Built-in scopes. The global and nonlocal keywords." },
+          { id:"l18", title:"Lambda Functions",               duration:"9m",  description:"Anonymous functions, when to use them, and pairing them with map(), filter(), and sorted()." },
+          { id:"l19", title:"Recursion",                      duration:"13m", description:"Functions that call themselves. Factorial, Fibonacci, and tree traversal examples with base cases." },
+        ],
+      },
+      {
+        id: "m5",
+        title: "Data Structures",
+        description: "Master Python's built-in collections to store and manipulate data efficiently.",
+        lessons: [
+          { id:"l20", title:"Lists: Creation and Operations", duration:"14m", description:"Creating lists, indexing, slicing, appending, removing, sorting, and copying." },
+          { id:"l21", title:"List Comprehensions",            duration:"12m", description:"The Pythonic way to build lists in one line. Filtering, transforming, and nesting comprehensions." },
+          { id:"l22", title:"Tuples and When to Use Them",    duration:"9m",  description:"Immutable sequences, tuple unpacking, named tuples, and using tuples as dictionary keys." },
+          { id:"l23", title:"Dictionaries",                   duration:"15m", description:"Key-value pairs, CRUD operations, iteration patterns, dict comprehensions, and defaultdict." },
+          { id:"l24", title:"Sets",                           duration:"10m", description:"Unique collections, set operations (union, intersection, difference), and use cases." },
+          { id:"l25", title:"Choosing the Right Structure",   duration:"8m",  description:"Time complexity overview and a decision guide for picking lists, dicts, sets, or tuples." },
+        ],
+      },
+      {
+        id: "m6",
+        title: "Object-Oriented Python",
+        description: "Model real-world concepts using classes, objects, and inheritance.",
+        lessons: [
+          { id:"l26", title:"Classes and Objects",            duration:"16m", description:"The class keyword, __init__, self, instance vs class attributes, and creating objects." },
+          { id:"l27", title:"Methods and Properties",         duration:"13m", description:"Instance methods, class methods, static methods, and the @property decorator." },
+          { id:"l28", title:"Inheritance",                    duration:"14m", description:"Creating child classes, calling super(), method overriding, and the MRO." },
+          { id:"l29", title:"Magic / Dunder Methods",         duration:"12m", description:"__str__, __repr__, __len__, __eq__, __lt__ and making your objects behave like built-ins." },
+          { id:"l30", title:"Dataclasses",                    duration:"10m", description:"The @dataclass decorator for writing less boilerplate. Fields, defaults, and frozen instances." },
+        ],
+      },
+      {
+        id: "m7",
+        title: "File I/O and Error Handling",
+        description: "Persist data to disk and write programs that fail gracefully.",
+        lessons: [
+          { id:"l31", title:"Reading and Writing Text Files",  duration:"13m", description:"open(), read(), write(), append modes, and the with statement for safe file handling." },
+          { id:"l32", title:"Working with JSON",               duration:"11m", description:"json.loads(), json.dumps(), reading and writing JSON files, pretty printing, and custom encoders." },
+          { id:"l33", title:"CSV Files with the csv Module",   duration:"10m", description:"Reading rows, writing rows, DictReader, DictWriter, and handling headers." },
+          { id:"l34", title:"try, except, finally, else",      duration:"12m", description:"Catching specific exceptions, the exception hierarchy, and cleanup with finally." },
+          { id:"l35", title:"Raising Custom Exceptions",       duration:"9m",  description:"Creating your own exception classes, raising errors with messages, and best practices." },
+        ],
+      },
+      {
+        id: "m8",
+        title: "Modules, Packages, and pip",
+        description: "Organize your code and use Python's rich ecosystem of third-party libraries.",
+        lessons: [
+          { id:"l36", title:"Modules and import Statements",   duration:"10m", description:"Creating modules, import vs from-import, __name__ == '__main__', and circular imports." },
+          { id:"l37", title:"The Standard Library",            duration:"12m", description:"Tour of os, sys, pathlib, datetime, random, collections, and itertools." },
+          { id:"l38", title:"pip and Virtual Environments",    duration:"11m", description:"Installing packages, requirements.txt, venv, and why isolation matters." },
+        ],
+      },
+      {
+        id: "m9",
+        title: "Final Project: CLI Todo App",
+        description: "Put everything together and build a real, working command-line application.",
+        lessons: [
+          { id:"l39", title:"Project Overview and Planning",   duration:"10m", description:"Feature list, data model design, file structure, and breaking the project into milestones." },
+          { id:"l40", title:"Building the Data Layer",         duration:"20m", description:"Todo class, JSON persistence, loading and saving tasks, and defensive error handling." },
+          { id:"l41", title:"Building the CLI Interface",      duration:"22m", description:"Parsing user commands, displaying formatted output, and connecting all the pieces." },
+          { id:"l42", title:"Adding Colors and Polish",        duration:"15m", description:"Using colorama for colored output, ASCII banners, and making the CLI feel professional." },
+          { id:"l43", title:"Testing Your Application",        duration:"12m", description:"Writing basic unit tests with unittest, testing edge cases, and running the test suite." },
+          { id:"l44", title:"Code Review and Next Steps",      duration:"14m", description:"Reviewing the finished project, refactoring tips, and where to go next in your Python journey." },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "javascript-modern",
+    title: "Modern JavaScript",
+    tagline: "ES6+ and beyond",
+    description: "Deep dive into modern JS including async/await, modules, closures, and the event loop.",
+    instructor: "Sofia Reyes",
+    instructorRole: "Frontend Lead at Vercel",
+    instructorBio: "",
+    level: "Intermediate",
+    duration: "10h 00m",
+    lessons: 36,
+    rating: 4.8,
+    students: 0,
+    tags: ["JavaScript","Frontend","Web"],
+    color: "#F7DF1E",
+    icon: "\u26A1",
+    comingSoon: true,
+    whatYouLearn: [],
+    requirements: [],
+    modules: [],
+  },
+  {
+    slug: "react-in-depth",
+    title: "React In Depth",
+    tagline: "Hooks, patterns and performance",
+    description: "Master React from hooks to advanced patterns with real-world projects.",
+    instructor: "Kai Nakamura",
+    instructorRole: "Staff Engineer at Stripe",
+    instructorBio: "",
+    level: "Intermediate",
+    duration: "14h 00m",
+    lessons: 52,
+    rating: 4.9,
+    students: 0,
+    tags: ["React","Frontend","TypeScript"],
+    color: "#61DAFB",
+    icon: "\u269B\uFE0F",
+    comingSoon: true,
+    whatYouLearn: [],
+    requirements: [],
+    modules: [],
+  },
+  {
+    slug: "sql-mastery",
+    title: "SQL Mastery",
+    tagline: "Query anything, anywhere",
+    description: "From SELECT to window functions. Become fluent in SQL for any database.",
+    instructor: "Priya Sharma",
+    instructorRole: "Data Engineer at Netflix",
+    instructorBio: "",
+    level: "Beginner",
+    duration: "8h 00m",
+    lessons: 30,
+    rating: 4.7,
+    students: 0,
+    tags: ["SQL","Database","Backend"],
+    color: "#4ADE80",
+    icon: "\uD83D\uDDC4\uFE0F",
+    comingSoon: true,
+    whatYouLearn: [],
+    requirements: [],
+    modules: [],
+  },
+];
+
+export function getCourse(slug: string): Course | undefined {
+  return courses.find(c => c.slug === slug);
+}
