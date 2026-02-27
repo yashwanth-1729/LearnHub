@@ -1,23 +1,16 @@
 "use client";
 import { getCourse } from "@/lib/courses";
-import { getLessonContent } from "@/lib/lesson-content";
-import { getLessonContent3 } from "@/lib/lesson-content-3";
+import { getLessonContent  } from "@/lib/lesson-content";
 import { getLessonContent2 } from "@/lib/lesson-content-2";
+import { getLessonContent3 } from "@/lib/lesson-content-3";
+import { getLessonContent4 } from "@/lib/lesson-content-4";
 import type { QuizQuestion } from "@/lib/lesson-content-2";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 
-function CodeBlock({ block, color }: {
-  block: { lang: string; code: string; label?: string; output?: string };
-  color: string;
-}) {
+function CodeBlock({ block, color }: { block: any; color: string }) {
   const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard.writeText(block.code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
-  };
   return (
     <div className="rounded-xl overflow-hidden border border-border">
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-border" style={{ background: "#111115" }}>
@@ -30,10 +23,9 @@ function CodeBlock({ block, color }: {
           {block.label && <span className="text-xs text-muted font-mono">{block.label}</span>}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded" style={{ background: `${color}15`, color }}>
-            {block.lang}
-          </span>
-          <button onClick={copy} className="text-xs px-2.5 py-1 rounded border border-border transition-all"
+          <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded" style={{ background: `${color}15`, color }}>{block.lang}</span>
+          <button onClick={() => { navigator.clipboard.writeText(block.code); setCopied(true); setTimeout(() => setCopied(false), 1800); }}
+            className="text-xs px-2.5 py-1 rounded border border-border transition-all"
             style={{ cursor: "none", color: copied ? "#4ADE80" : "#5A5A70", borderColor: copied ? "rgba(74,222,128,.4)" : "rgba(42,42,50,1)" }}>
             {copied ? "\u2713 Copied" : "Copy"}
           </button>
@@ -58,14 +50,14 @@ function McqQ({ q, idx, submitted, answer, onAnswer, color }: any) {
       <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
       {q.options.map((opt: string, oi: number) => {
         const sel = answer === oi, corr = oi === q.answer;
-        const bg = submitted ? (corr ? "rgba(74,222,128,.08)" : sel ? "rgba(239,68,68,.07)" : "transparent") : sel ? `${color}12` : "transparent";
-        const bc = submitted ? (corr ? "rgba(74,222,128,.4)" : sel ? "rgba(239,68,68,.3)" : "#2A2A32") : sel ? color : "#2A2A32";
-        const tc = submitted ? (corr ? "#4ADE80" : sel ? "#F87171" : "#5A5A70") : sel ? "#fff" : "#5A5A70";
         return (
           <button key={oi} onClick={() => !submitted && onAnswer(oi)}
             className="w-full text-left px-4 py-3 rounded-xl border text-sm transition-all"
-            style={{ cursor: "none", background: bg, borderColor: bc, color: tc }}>
-            <span className="mr-2 font-mono text-xs opacity-50">{String.fromCharCode(65 + oi)}.</span>
+            style={{ cursor: "none",
+              background: submitted ? (corr ? "rgba(74,222,128,.08)" : sel ? "rgba(239,68,68,.07)" : "transparent") : sel ? `${color}12` : "transparent",
+              borderColor: submitted ? (corr ? "rgba(74,222,128,.4)" : sel ? "rgba(239,68,68,.3)" : "#2A2A32") : sel ? color : "#2A2A32",
+              color: submitted ? (corr ? "#4ADE80" : sel ? "#F87171" : "#5A5A70") : sel ? "#fff" : "#5A5A70" }}>
+            <span className="mr-2 font-mono text-xs opacity-50">{String.fromCharCode(65+oi)}.</span>
             {opt}{submitted && corr && " \u2713"}{submitted && sel && !corr && " \u2717"}
           </button>
         );
@@ -82,13 +74,13 @@ function TfQ({ q, idx, submitted, answer, onAnswer, color }: any) {
       <div className="flex gap-3">
         {([true, false] as boolean[]).map(v => {
           const sel = answer === v, corr = v === q.answer;
-          const bg = submitted ? (corr ? "rgba(74,222,128,.08)" : sel ? "rgba(239,68,68,.07)" : "transparent") : sel ? `${color}12` : "transparent";
-          const bc = submitted ? (corr ? "rgba(74,222,128,.4)" : sel ? "rgba(239,68,68,.3)" : "#2A2A32") : sel ? color : "#2A2A32";
-          const tc = submitted ? (corr ? "#4ADE80" : sel ? "#F87171" : "#5A5A70") : sel ? "#fff" : "#5A5A70";
           return (
             <button key={String(v)} onClick={() => !submitted && onAnswer(v)}
               className="flex-1 py-3 rounded-xl border text-sm font-semibold transition-all"
-              style={{ cursor: "none", background: bg, borderColor: bc, color: tc }}>
+              style={{ cursor: "none",
+                background: submitted ? (corr ? "rgba(74,222,128,.08)" : sel ? "rgba(239,68,68,.07)" : "transparent") : sel ? `${color}12` : "transparent",
+                borderColor: submitted ? (corr ? "rgba(74,222,128,.4)" : sel ? "rgba(239,68,68,.3)" : "#2A2A32") : sel ? color : "#2A2A32",
+                color: submitted ? (corr ? "#4ADE80" : sel ? "#F87171" : "#5A5A70") : sel ? "#fff" : "#5A5A70" }}>
               {v ? "True" : "False"}{submitted && corr && " \u2713"}{submitted && sel && !corr && " \u2717"}
             </button>
           );
@@ -101,19 +93,18 @@ function TfQ({ q, idx, submitted, answer, onAnswer, color }: any) {
 
 function FillQ({ q, idx, submitted, answer, onAnswer, color }: any) {
   const corr = submitted && answer.trim().toLowerCase() === q.answer.toLowerCase();
-  const wrong = submitted && !corr;
   return (
     <div className="space-y-2">
       <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
       <div className="flex items-center gap-2">
         <input value={answer} onChange={e => !submitted && onAnswer(e.target.value)} placeholder={q.hint}
-          className="flex-1 px-4 py-3 rounded-xl border text-sm font-mono outline-none transition-all"
+          className="flex-1 px-4 py-3 rounded-xl border text-sm font-mono outline-none"
           style={{ cursor: submitted ? "default" : "text", background: "#111115",
             borderColor: submitted ? (corr ? "rgba(74,222,128,.4)" : "rgba(239,68,68,.3)") : answer ? color : "#2A2A32",
             color: submitted ? (corr ? "#4ADE80" : "#F87171") : "#fff" }} />
         {submitted && <span style={{ color: corr ? "#4ADE80" : "#F87171", fontSize: "18px" }}>{corr ? "\u2713" : "\u2717"}</span>}
       </div>
-      {wrong && <p className="text-xs pl-2" style={{ color }}>&#8594; Correct: <strong>{q.answer}</strong></p>}
+      {submitted && !corr && <p className="text-xs pl-2" style={{ color }}>&#8594; Correct: <strong>{q.answer}</strong></p>}
       {submitted && <p className="text-xs text-muted pl-2 italic">{q.hint}</p>}
     </div>
   );
@@ -121,21 +112,19 @@ function FillQ({ q, idx, submitted, answer, onAnswer, color }: any) {
 
 function PredictQ({ q, idx, submitted, answer, onAnswer, color }: any) {
   const corr = submitted && answer.trim() === q.answer.trim();
-  const wrong = submitted && !corr;
   return (
     <div className="space-y-2">
       <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
-      <pre className="p-3 rounded-xl border border-border text-xs font-mono overflow-x-auto leading-relaxed"
-        style={{ background: "#0A0A0D", color: "#E8E8F0" }}>{q.code}</pre>
+      <pre className="p-3 rounded-xl border border-border text-xs font-mono overflow-x-auto" style={{ background: "#0A0A0D", color: "#E8E8F0" }}>{q.code}</pre>
       <div className="flex items-center gap-2">
         <input value={answer} onChange={e => !submitted && onAnswer(e.target.value)} placeholder="Type the exact output..."
-          className="flex-1 px-4 py-3 rounded-xl border text-sm font-mono outline-none transition-all"
+          className="flex-1 px-4 py-3 rounded-xl border text-sm font-mono outline-none"
           style={{ cursor: submitted ? "default" : "text", background: "#111115",
             borderColor: submitted ? (corr ? "rgba(74,222,128,.4)" : "rgba(239,68,68,.3)") : answer ? color : "#2A2A32",
             color: submitted ? (corr ? "#4ADE80" : "#F87171") : "#fff" }} />
         {submitted && <span style={{ color: corr ? "#4ADE80" : "#F87171", fontSize: "18px" }}>{corr ? "\u2713" : "\u2717"}</span>}
       </div>
-      {wrong && (
+      {submitted && !corr && (
         <div className="rounded-xl border p-3" style={{ background: "#0D1A0F", borderColor: "rgba(74,222,128,.15)" }}>
           <p className="text-xs font-semibold mb-1" style={{ color: "#4ADE80" }}>Expected:</p>
           <pre className="text-xs font-mono" style={{ color: "#86EFAC" }}>{q.answer}</pre>
@@ -146,16 +135,14 @@ function PredictQ({ q, idx, submitted, answer, onAnswer, color }: any) {
   );
 }
 
-function QuizBlock({ questions, color, title = "Quick Quiz \uD83D\uDCDD", isChapter = false }: {
-  questions: any[]; color: string; title?: string; isChapter?: boolean;
-}) {
+function QuizBlock({ questions, color, title = "Quick Quiz \uD83D\uDCDD", isChapter = false }: any) {
   const [answers, setAnswers] = useState<Record<number, any>>({});
   const [submitted, setSubmitted] = useState(false);
-  const allAnswered = questions.every((q, i) => {
+  const allAnswered = questions.every((q: any, i: number) => {
     if (q.type === "fillblank" || q.type === "predict") return (answers[i] ?? "").trim().length > 0;
     return answers[i] !== undefined;
   });
-  const score = submitted ? questions.filter((q, i) => {
+  const score = submitted ? questions.filter((q: any, i: number) => {
     const t = q.type ?? "mcq";
     if (t === "mcq")       return answers[i] === q.answer;
     if (t === "truefalse") return answers[i] === q.answer;
@@ -164,7 +151,7 @@ function QuizBlock({ questions, color, title = "Quick Quiz \uD83D\uDCDD", isChap
     return false;
   }).length : 0;
   const pct = submitted ? Math.round((score / questions.length) * 100) : 0;
-  const tc = (t: string) => questions.filter(q => (q.type ?? "mcq") === t).length;
+  const tc = (t: string) => questions.filter((q: any) => (q.type ?? "mcq") === t).length;
 
   return (
     <div className={`rounded-2xl border p-6 md:p-8 ${isChapter ? "border-2" : "border-border bg-card"}`}
@@ -175,13 +162,13 @@ function QuizBlock({ questions, color, title = "Quick Quiz \uD83D\uDCDD", isChap
           {isChapter && <p className="text-xs text-muted mt-1">End-of-module comprehensive test</p>}
         </div>
         <div className="flex-shrink-0 flex flex-wrap gap-1.5 justify-end">
-          {tc("mcq") > 0 && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("mcq")} MCQ</span>}
+          {tc("mcq") > 0       && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("mcq")} MCQ</span>}
           {tc("truefalse") > 0 && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("truefalse")} T/F</span>}
-          {(tc("fillblank") + tc("predict")) > 0 && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("fillblank") + tc("predict")} Typed</span>}
+          {(tc("fillblank") + tc("predict")) > 0 && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("fillblank")+tc("predict")} Typed</span>}
         </div>
       </div>
       <div className="space-y-8">
-        {questions.map((q, i) => {
+        {questions.map((q: any, i: number) => {
           const t = q.type ?? "mcq";
           const p = { idx: i, submitted, color };
           const setA = (v: any) => setAnswers(a => ({ ...a, [i]: v }));
@@ -200,13 +187,11 @@ function QuizBlock({ questions, color, title = "Quick Quiz \uD83D\uDCDD", isChap
         </button>
       ) : (
         <div className="mt-8 p-4 rounded-xl border flex items-center justify-between gap-4"
-          style={{ background: pct === 100 ? "rgba(74,222,128,.06)" : pct >= 60 ? `${color}08` : "rgba(239,68,68,.06)",
-            borderColor: pct === 100 ? "rgba(74,222,128,.25)" : pct >= 60 ? `${color}30` : "rgba(239,68,68,.2)" }}>
+          style={{ background: pct===100?"rgba(74,222,128,.06)":pct>=60?`${color}08`:"rgba(239,68,68,.06)",
+            borderColor: pct===100?"rgba(74,222,128,.25)":pct>=60?`${color}30`:"rgba(239,68,68,.2)" }}>
           <div>
             <p className="font-semibold text-white text-sm">{score}/{questions.length} correct ({pct}%)</p>
-            <p className="text-xs text-muted mt-0.5">
-              {pct === 100 ? "Perfect! \uD83C\uDF89" : pct >= 80 ? "Great job!" : pct >= 60 ? "Good effort. Review explanations." : "Review the lesson and try again."}
-            </p>
+            <p className="text-xs text-muted mt-0.5">{pct===100?"Perfect! \uD83C\uDF89":pct>=80?"Great job!":pct>=60?"Good effort. Review explanations.":"Review the lesson and try again."}</p>
           </div>
           <button onClick={() => { setAnswers({}); setSubmitted(false); }}
             className="text-xs px-3 py-2 rounded-lg border border-border text-muted hover:text-white transition-colors flex-shrink-0"
@@ -221,8 +206,10 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
   const course = getCourse(params.slug);
   if (!course) notFound();
 
-  // Priority: lesson-content-3 (l9-l15) > lesson-content (l1-l8) > lesson-content-2 (l16-l25)
-  const lesson = getLessonContent3(params.lessonId) ?? getLessonContent(params.lessonId) ?? getLessonContent2(params.lessonId);
+  const lesson = getLessonContent4(params.lessonId)
+    ?? getLessonContent3(params.lessonId)
+    ?? getLessonContent(params.lessonId)
+    ?? getLessonContent2(params.lessonId);
   if (!lesson) notFound();
 
   const allLessons = course.modules.flatMap(m => m.lessons);
@@ -230,13 +217,12 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
   const prevL      = idx > 0 ? allLessons[idx - 1] : null;
   const nextL      = idx < allLessons.length - 1 ? allLessons[idx + 1] : null;
   const currentMod = course.modules.find(m => m.lessons.some(l => l.id === params.lessonId));
-
-  const sections  = lesson.sections ?? [];
-  const quiz      = (lesson as any).quiz ?? [];
-  const chapterQ  = (lesson as any).chapterQuiz;
+  const sections   = (lesson as any).sections ?? [];
+  const quiz       = (lesson as any).quiz ?? [];
+  const chapterQ   = (lesson as any).chapterQuiz;
 
   const hasContent = (id: string) =>
-    !!(getLessonContent3(id) ?? getLessonContent(id) ?? getLessonContent2(id));
+    !!(getLessonContent4(id) ?? getLessonContent3(id) ?? getLessonContent(id) ?? getLessonContent2(id));
 
   return (
     <div className="min-h-screen pt-16" style={{ background: "#0D0D0F" }}>
@@ -259,15 +245,15 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
                     const avail  = hasContent(l.id);
                     return avail ? (
                       <Link key={l.id} href={`/courses/${params.slug}/lessons/${l.id}`}
-                        className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors border-b border-border/30 ${active ? "" : "text-muted hover:text-white hover:bg-surface"}`}
+                        className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors border-b border-border/30 ${active?"":"text-muted hover:text-white hover:bg-surface"}`}
                         style={active ? { color: course.color, background: `${course.color}10`, borderLeft: `2px solid ${course.color}` } : {}}>
-                        <span className="flex-shrink-0 w-4 text-center" style={{ color: active ? course.color : "#5A5A70" }}>{active ? "\u25B6" : j + 1}</span>
+                        <span className="flex-shrink-0 w-4 text-center" style={{ color: active ? course.color : "#5A5A70" }}>{active ? "\u25B6" : j+1}</span>
                         <span className="leading-snug flex-1">{l.title}</span>
-                        <span className="font-mono flex-shrink-0" style={{ color: "#5A5A70" }}>{l.duration}</span>
+                        <span className="font-mono flex-shrink-0 text-xs" style={{ color: "#5A5A70" }}>{l.duration}</span>
                       </Link>
                     ) : (
                       <div key={l.id} className="flex items-center gap-2 px-4 py-2.5 text-xs border-b border-border/30 opacity-35">
-                        <span className="w-4 text-center text-muted">{j + 1}</span>
+                        <span className="w-4 text-center text-muted">{j+1}</span>
                         <span className="leading-snug flex-1 text-muted">{l.title}</span>
                         <span className="font-mono text-muted">{l.duration}</span>
                       </div>
@@ -284,17 +270,16 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
             <div className="p-6 md:p-8">
               <div className="flex items-center gap-2 text-xs text-muted mb-4">
                 <Link href={`/courses/${params.slug}`} className="hover:text-white transition-colors">{course.title}</Link>
-                <span>&#8250;</span>
-                <span>{currentMod?.title}</span>
+                <span>&#8250;</span><span>{currentMod?.title}</span>
               </div>
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
-                  <h1 className="font-display font-extrabold text-2xl md:text-3xl text-white mb-3 leading-tight">{lesson.title}</h1>
-                  <p className="text-muted text-sm leading-relaxed max-w-2xl">{lesson.intro}</p>
+                  <h1 className="font-display font-extrabold text-2xl md:text-3xl text-white mb-3 leading-tight">{(lesson as any).title}</h1>
+                  <p className="text-muted text-sm leading-relaxed max-w-2xl">{(lesson as any).intro}</p>
                 </div>
                 <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                  <span className="text-xs font-mono text-muted bg-surface border border-border px-2.5 py-1 rounded-lg">{lesson.duration}</span>
-                  {lesson.free && <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: `${course.color}20`, color: course.color }}>Free preview</span>}
+                  <span className="text-xs font-mono text-muted bg-surface border border-border px-2.5 py-1 rounded-lg">{(lesson as any).duration}</span>
+                  {(lesson as any).free && <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: `${course.color}20`, color: course.color }}>Free preview</span>}
                 </div>
               </div>
             </div>
@@ -307,13 +292,12 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
                   <div className="w-1 h-6 rounded-full flex-shrink-0" style={{ background: course.color }} />
                   <h2 className="font-display font-bold text-xl text-white">{section.heading}</h2>
                 </div>
-                {Array.isArray(section.body) ? (
-                  <div className="space-y-3">{section.body.map((p: string, pi: number) => <p key={pi} className="text-muted text-sm leading-relaxed">{p}</p>)}</div>
-                ) : (
-                  <p className="text-muted text-sm leading-relaxed">{section.body}</p>
-                )}
+                {Array.isArray(section.body)
+                  ? <div className="space-y-3">{section.body.map((p: string, pi: number) => <p key={pi} className="text-muted text-sm leading-relaxed">{p}</p>)}</div>
+                  : <p className="text-muted text-sm leading-relaxed">{section.body}</p>
+                }
                 {section.code && <CodeBlock block={section.code} color={course.color} />}
-                {section.examples && section.examples.length > 0 && (
+                {section.examples?.length > 0 && (
                   <div className="space-y-4">
                     <p className="text-xs font-semibold uppercase tracking-widest text-muted">More examples</p>
                     {section.examples.map((ex: any, ei: number) => <CodeBlock key={ei} block={ex} color={course.color} />)}
@@ -342,14 +326,13 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
           ))}
 
           {quiz.length > 0 && <QuizBlock questions={quiz} color={course.color} />}
-          {chapterQ && chapterQ.length > 0 && <QuizBlock questions={chapterQ} color={course.color} title="\uD83C\uDFC6 Chapter Quiz" isChapter={true} />}
+          {chapterQ?.length > 0 && <QuizBlock questions={chapterQ} color={course.color} title="\uD83C\uDFC6 Chapter Quiz" isChapter={true} />}
 
           <div className="flex items-center justify-between pt-2 pb-10 gap-4">
             {prevL ? (
               <Link href={`/courses/${params.slug}/lessons/${prevL.id}`}
                 className="flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-card text-sm text-muted hover:text-white hover:border-accent transition-all min-w-0 flex-1 max-w-xs">
-                <span className="flex-shrink-0">&#8592;</span>
-                <span className="truncate">{prevL.title}</span>
+                <span className="flex-shrink-0">&#8592;</span><span className="truncate">{prevL.title}</span>
               </Link>
             ) : (
               <Link href={`/courses/${params.slug}`} className="flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-card text-sm text-muted hover:text-white transition-all">
@@ -360,8 +343,7 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
               <Link href={`/courses/${params.slug}/lessons/${nextL.id}`}
                 className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all hover:brightness-110 min-w-0 flex-1 max-w-xs justify-end"
                 style={{ background: `linear-gradient(135deg,${course.color},${course.color}cc)`, color: "#0D0D0F" }}>
-                <span className="truncate">{nextL.title}</span>
-                <span className="flex-shrink-0">&#8594;</span>
+                <span className="truncate">{nextL.title}</span><span className="flex-shrink-0">&#8594;</span>
               </Link>
             )}
           </div>
