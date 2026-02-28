@@ -5,10 +5,12 @@ import { getLessonContent2 } from "@/lib/lesson-content-2";
 import { getLessonContent3 } from "@/lib/lesson-content-3";
 import { getLessonContent4 } from "@/lib/lesson-content-4";
 import { getLessonContent5 } from "@/lib/lesson-content-5";
-import type { QuizQuestion } from "@/lib/lesson-content-2";
+import { getLessonContent6 } from "@/lib/lesson-content-6";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
+
+const btn = "transition-all duration-150 active:scale-95";
 
 function CodeBlock({ block, color }: { block: any; color: string }) {
   const [copied, setCopied] = useState(false);
@@ -26,8 +28,8 @@ function CodeBlock({ block, color }: { block: any; color: string }) {
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded" style={{ background: `${color}15`, color }}>{block.lang}</span>
           <button onClick={() => { navigator.clipboard.writeText(block.code); setCopied(true); setTimeout(() => setCopied(false), 1800); }}
-            className="text-xs px-2.5 py-1 rounded border border-border transition-all"
-            style={{ cursor: "none", color: copied ? "#4ADE80" : "#5A5A70", borderColor: copied ? "rgba(74,222,128,.4)" : "rgba(42,42,50,1)" }}>
+            className={`text-xs px-2.5 py-1 rounded border border-border ${btn} hover:border-accent hover:text-white`}
+            style={{ cursor: "none", color: copied ? "#4ADE80" : "#5A5A70", borderColor: copied ? "rgba(74,222,128,.4)" : undefined }}>
             {copied ? "\u2713 Copied" : "Copy"}
           </button>
         </div>
@@ -45,19 +47,29 @@ function CodeBlock({ block, color }: { block: any; color: string }) {
   );
 }
 
-function McqQ({ q, idx, submitted, answer, onAnswer, color }: any) {
+/* \u2500\u2500 Quiz question components \u2500\u2500 */
+function McqQ({ q, idx, submitted, answer, onAnswer, onClear, color }: any) {
   return (
     <div className="space-y-2">
-      <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+        {answer !== undefined && !submitted && (
+          <button onClick={onClear} className={`text-xs px-2 py-0.5 rounded border border-border text-muted hover:text-white hover:border-red-500 flex-shrink-0 ${btn}`} style={{ cursor: "none" }}>
+            Clear
+          </button>
+        )}
+      </div>
       {q.options.map((opt: string, oi: number) => {
         const sel = answer === oi, corr = oi === q.answer;
+        const base = "w-full text-left px-4 py-3 rounded-xl border text-sm " + btn;
+        const hov  = !submitted ? "hover:border-accent hover:text-white" : "";
         return (
           <button key={oi} onClick={() => !submitted && onAnswer(oi)}
-            className="w-full text-left px-4 py-3 rounded-xl border text-sm transition-all"
+            className={`${base} ${hov}`}
             style={{ cursor: "none",
               background: submitted ? (corr ? "rgba(74,222,128,.08)" : sel ? "rgba(239,68,68,.07)" : "transparent") : sel ? `${color}12` : "transparent",
-              borderColor: submitted ? (corr ? "rgba(74,222,128,.4)" : sel ? "rgba(239,68,68,.3)" : "#2A2A32") : sel ? color : "#2A2A32",
-              color: submitted ? (corr ? "#4ADE80" : sel ? "#F87171" : "#5A5A70") : sel ? "#fff" : "#5A5A70" }}>
+              borderColor: submitted ? (corr ? "rgba(74,222,128,.4)"  : sel ? "rgba(239,68,68,.3)" : "#2A2A32") : sel ? color : "#2A2A32",
+              color:       submitted ? (corr ? "#4ADE80" : sel ? "#F87171" : "#5A5A70") : sel ? "#fff" : "#5A5A70" }}>
             <span className="mr-2 font-mono text-xs opacity-50">{String.fromCharCode(65+oi)}.</span>
             {opt}{submitted && corr && " \u2713"}{submitted && sel && !corr && " \u2717"}
           </button>
@@ -68,20 +80,25 @@ function McqQ({ q, idx, submitted, answer, onAnswer, color }: any) {
   );
 }
 
-function TfQ({ q, idx, submitted, answer, onAnswer, color }: any) {
+function TfQ({ q, idx, submitted, answer, onAnswer, onClear, color }: any) {
   return (
     <div className="space-y-2">
-      <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+        {answer !== undefined && !submitted && (
+          <button onClick={onClear} className={`text-xs px-2 py-0.5 rounded border border-border text-muted hover:text-white hover:border-red-500 flex-shrink-0 ${btn}`} style={{ cursor: "none" }}>Clear</button>
+        )}
+      </div>
       <div className="flex gap-3">
         {([true, false] as boolean[]).map(v => {
           const sel = answer === v, corr = v === q.answer;
           return (
             <button key={String(v)} onClick={() => !submitted && onAnswer(v)}
-              className="flex-1 py-3 rounded-xl border text-sm font-semibold transition-all"
+              className={`flex-1 py-3 rounded-xl border text-sm font-semibold ${btn} ${!submitted ? "hover:border-accent hover:text-white" : ""}`}
               style={{ cursor: "none",
                 background: submitted ? (corr ? "rgba(74,222,128,.08)" : sel ? "rgba(239,68,68,.07)" : "transparent") : sel ? `${color}12` : "transparent",
                 borderColor: submitted ? (corr ? "rgba(74,222,128,.4)" : sel ? "rgba(239,68,68,.3)" : "#2A2A32") : sel ? color : "#2A2A32",
-                color: submitted ? (corr ? "#4ADE80" : sel ? "#F87171" : "#5A5A70") : sel ? "#fff" : "#5A5A70" }}>
+                color:       submitted ? (corr ? "#4ADE80" : sel ? "#F87171" : "#5A5A70") : sel ? "#fff" : "#5A5A70" }}>
               {v ? "True" : "False"}{submitted && corr && " \u2713"}{submitted && sel && !corr && " \u2717"}
             </button>
           );
@@ -92,14 +109,19 @@ function TfQ({ q, idx, submitted, answer, onAnswer, color }: any) {
   );
 }
 
-function FillQ({ q, idx, submitted, answer, onAnswer, color }: any) {
+function FillQ({ q, idx, submitted, answer, onAnswer, onClear, color }: any) {
   const corr = submitted && answer.trim().toLowerCase() === q.answer.toLowerCase();
   return (
     <div className="space-y-2">
-      <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+        {answer && !submitted && (
+          <button onClick={onClear} className={`text-xs px-2 py-0.5 rounded border border-border text-muted hover:text-white hover:border-red-500 flex-shrink-0 ${btn}`} style={{ cursor: "none" }}>Clear</button>
+        )}
+      </div>
       <div className="flex items-center gap-2">
         <input value={answer} onChange={e => !submitted && onAnswer(e.target.value)} placeholder={q.hint}
-          className="flex-1 px-4 py-3 rounded-xl border text-sm font-mono outline-none"
+          className="flex-1 px-4 py-3 rounded-xl border text-sm font-mono outline-none transition-all hover:border-accent focus:border-accent"
           style={{ cursor: submitted ? "default" : "text", background: "#111115",
             borderColor: submitted ? (corr ? "rgba(74,222,128,.4)" : "rgba(239,68,68,.3)") : answer ? color : "#2A2A32",
             color: submitted ? (corr ? "#4ADE80" : "#F87171") : "#fff" }} />
@@ -111,15 +133,20 @@ function FillQ({ q, idx, submitted, answer, onAnswer, color }: any) {
   );
 }
 
-function PredictQ({ q, idx, submitted, answer, onAnswer, color }: any) {
+function PredictQ({ q, idx, submitted, answer, onAnswer, onClear, color }: any) {
   const corr = submitted && answer.trim() === q.answer.trim();
   return (
     <div className="space-y-2">
-      <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+        {answer && !submitted && (
+          <button onClick={onClear} className={`text-xs px-2 py-0.5 rounded border border-border text-muted hover:text-white hover:border-red-500 flex-shrink-0 ${btn}`} style={{ cursor: "none" }}>Clear</button>
+        )}
+      </div>
       <pre className="p-3 rounded-xl border border-border text-xs font-mono overflow-x-auto" style={{ background: "#0A0A0D", color: "#E8E8F0" }}>{q.code}</pre>
       <div className="flex items-center gap-2">
         <input value={answer} onChange={e => !submitted && onAnswer(e.target.value)} placeholder="Type the exact output..."
-          className="flex-1 px-4 py-3 rounded-xl border text-sm font-mono outline-none"
+          className="flex-1 px-4 py-3 rounded-xl border text-sm font-mono outline-none transition-all hover:border-accent focus:border-accent"
           style={{ cursor: submitted ? "default" : "text", background: "#111115",
             borderColor: submitted ? (corr ? "rgba(74,222,128,.4)" : "rgba(239,68,68,.3)") : answer ? color : "#2A2A32",
             color: submitted ? (corr ? "#4ADE80" : "#F87171") : "#fff" }} />
@@ -139,10 +166,15 @@ function PredictQ({ q, idx, submitted, answer, onAnswer, color }: any) {
 function QuizBlock({ questions, color, title = "Quick Quiz \uD83D\uDCDD", isChapter = false }: any) {
   const [answers, setAnswers] = useState<Record<number, any>>({});
   const [submitted, setSubmitted] = useState(false);
+
+  const setA  = (i: number, v: any) => setAnswers(a => ({ ...a, [i]: v }));
+  const clearA = (i: number) => setAnswers(a => { const n = { ...a }; delete n[i]; return n; });
+
   const allAnswered = questions.every((q: any, i: number) => {
     if (q.type === "fillblank" || q.type === "predict") return (answers[i] ?? "").trim().length > 0;
     return answers[i] !== undefined;
   });
+
   const score = submitted ? questions.filter((q: any, i: number) => {
     const t = q.type ?? "mcq";
     if (t === "mcq")       return answers[i] === q.answer;
@@ -151,6 +183,7 @@ function QuizBlock({ questions, color, title = "Quick Quiz \uD83D\uDCDD", isChap
     if (t === "predict")   return (answers[i] ?? "").trim() === q.answer.trim();
     return false;
   }).length : 0;
+
   const pct = submitted ? Math.round((score / questions.length) * 100) : 0;
   const tc = (t: string) => questions.filter((q: any) => (q.type ?? "mcq") === t).length;
 
@@ -163,26 +196,27 @@ function QuizBlock({ questions, color, title = "Quick Quiz \uD83D\uDCDD", isChap
           {isChapter && <p className="text-xs text-muted mt-1">End-of-module comprehensive test</p>}
         </div>
         <div className="flex-shrink-0 flex flex-wrap gap-1.5 justify-end">
-          {tc("mcq") > 0       && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("mcq")} MCQ</span>}
+          {tc("mcq")       > 0 && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("mcq")} MCQ</span>}
           {tc("truefalse") > 0 && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("truefalse")} T/F</span>}
-          {(tc("fillblank") + tc("predict")) > 0 && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("fillblank")+tc("predict")} Typed</span>}
+          {(tc("fillblank")+tc("predict")) > 0 && <span className="text-xs px-2 py-1 rounded-full border border-border text-muted">{tc("fillblank")+tc("predict")} Typed</span>}
         </div>
       </div>
+
       <div className="space-y-8">
         {questions.map((q: any, i: number) => {
           const t = q.type ?? "mcq";
-          const p = { idx: i, submitted, color };
-          const setA = (v: any) => setAnswers(a => ({ ...a, [i]: v }));
-          if (t === "mcq")       return <McqQ     key={i} q={q} answer={answers[i]}       onAnswer={setA} {...p} />;
-          if (t === "truefalse") return <TfQ      key={i} q={q} answer={answers[i]}       onAnswer={setA} {...p} />;
-          if (t === "fillblank") return <FillQ    key={i} q={q} answer={answers[i] ?? ""} onAnswer={setA} {...p} />;
-          if (t === "predict")   return <PredictQ key={i} q={q} answer={answers[i] ?? ""} onAnswer={setA} {...p} />;
+          const p = { idx: i, submitted, color, onClear: () => clearA(i) };
+          if (t === "mcq")       return <McqQ     key={i} q={q} answer={answers[i]}       onAnswer={(v:any) => setA(i,v)} {...p} />;
+          if (t === "truefalse") return <TfQ      key={i} q={q} answer={answers[i]}       onAnswer={(v:any) => setA(i,v)} {...p} />;
+          if (t === "fillblank") return <FillQ    key={i} q={q} answer={answers[i] ?? ""} onAnswer={(v:any) => setA(i,v)} {...p} />;
+          if (t === "predict")   return <PredictQ key={i} q={q} answer={answers[i] ?? ""} onAnswer={(v:any) => setA(i,v)} {...p} />;
           return null;
         })}
       </div>
+
       {!submitted ? (
         <button onClick={() => setSubmitted(true)} disabled={!allAnswered}
-          className="mt-8 px-6 py-3 rounded-xl font-semibold text-sm transition-all"
+          className={`mt-8 px-6 py-3 rounded-xl font-semibold text-sm ${btn} ${allAnswered ? "hover:brightness-110" : "opacity-50 cursor-not-allowed"}`}
           style={{ cursor: "none", background: allAnswered ? `linear-gradient(135deg,${color},${color}cc)` : "#1C1C21", color: allAnswered ? "#0D0D0F" : "#5A5A70" }}>
           Submit answers
         </button>
@@ -195,7 +229,7 @@ function QuizBlock({ questions, color, title = "Quick Quiz \uD83D\uDCDD", isChap
             <p className="text-xs text-muted mt-0.5">{pct===100?"Perfect! \uD83C\uDF89":pct>=80?"Great job!":pct>=60?"Good effort. Review explanations.":"Review the lesson and try again."}</p>
           </div>
           <button onClick={() => { setAnswers({}); setSubmitted(false); }}
-            className="text-xs px-3 py-2 rounded-lg border border-border text-muted hover:text-white transition-colors flex-shrink-0"
+            className={`text-xs px-3 py-2 rounded-lg border border-border text-muted hover:text-white hover:border-accent flex-shrink-0 ${btn}`}
             style={{ cursor: "none" }}>Retry</button>
         </div>
       )}
@@ -207,11 +241,13 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
   const course = getCourse(params.slug);
   if (!course) notFound();
 
-  const lesson = getLessonContent5(params.lessonId)
-    ?? getLessonContent4(params.lessonId)
-    ?? getLessonContent3(params.lessonId)
-    ?? getLessonContent(params.lessonId)
-    ?? getLessonContent2(params.lessonId);
+  const lesson =
+    getLessonContent6(params.lessonId) ??
+    getLessonContent5(params.lessonId) ??
+    getLessonContent4(params.lessonId) ??
+    getLessonContent3(params.lessonId) ??
+    getLessonContent(params.lessonId)  ??
+    getLessonContent2(params.lessonId);
   if (!lesson) notFound();
 
   const allLessons = course.modules.flatMap(m => m.lessons);
@@ -224,16 +260,19 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
   const chapterQ   = (lesson as any).chapterQuiz;
 
   const hasContent = (id: string) =>
-    !!(getLessonContent5(id) ?? getLessonContent4(id) ?? getLessonContent3(id) ?? getLessonContent(id) ?? getLessonContent2(id));
+    !!(getLessonContent6(id) ?? getLessonContent5(id) ?? getLessonContent4(id) ??
+       getLessonContent3(id) ?? getLessonContent(id)  ?? getLessonContent2(id));
 
   return (
     <div className="min-h-screen pt-16" style={{ background: "#0D0D0F" }}>
       <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
 
+        {/* \u2500\u2500 Sidebar \u2500\u2500 */}
         <aside className="lg:col-span-1 hidden lg:block">
           <div className="sticky top-24 rounded-2xl border border-border bg-card overflow-hidden">
             <div className="p-4 border-b border-border">
-              <Link href={`/courses/${params.slug}`} className="text-xs text-muted hover:text-white transition-colors flex items-center gap-1 mb-3">
+              <Link href={`/courses/${params.slug}`}
+                className={`text-xs text-muted hover:text-white flex items-center gap-1 mb-3 ${btn}`}>
                 &#8592; {course.title}
               </Link>
               <div className="text-xs font-bold uppercase tracking-wider" style={{ color: course.color }}>{currentMod?.title}</div>
@@ -247,14 +286,14 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
                     const avail  = hasContent(l.id);
                     return avail ? (
                       <Link key={l.id} href={`/courses/${params.slug}/lessons/${l.id}`}
-                        className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors border-b border-border/30 ${active?"":"text-muted hover:text-white hover:bg-surface"}`}
+                        className={`flex items-center gap-2 px-4 py-2.5 text-xs border-b border-border/30 ${btn} ${active ? "" : "text-muted hover:text-white hover:bg-surface"}`}
                         style={active ? { color: course.color, background: `${course.color}10`, borderLeft: `2px solid ${course.color}` } : {}}>
                         <span className="flex-shrink-0 w-4 text-center" style={{ color: active ? course.color : "#5A5A70" }}>{active ? "\u25B6" : j+1}</span>
                         <span className="leading-snug flex-1">{l.title}</span>
                         <span className="font-mono flex-shrink-0 text-xs" style={{ color: "#5A5A70" }}>{l.duration}</span>
                       </Link>
                     ) : (
-                      <div key={l.id} className="flex items-center gap-2 px-4 py-2.5 text-xs border-b border-border/30 opacity-35">
+                      <div key={l.id} className="flex items-center gap-2 px-4 py-2.5 text-xs border-b border-border/30 opacity-35 cursor-not-allowed">
                         <span className="w-4 text-center text-muted">{j+1}</span>
                         <span className="leading-snug flex-1 text-muted">{l.title}</span>
                         <span className="font-mono text-muted">{l.duration}</span>
@@ -267,11 +306,13 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
           </div>
         </aside>
 
+        {/* \u2500\u2500 Main \u2500\u2500 */}
         <main className="lg:col-span-3 space-y-6">
+          {/* Header */}
           <div className="rounded-2xl border border-border overflow-hidden" style={{ background: `linear-gradient(135deg,#141417,${course.color}10)` }}>
             <div className="p-6 md:p-8">
               <div className="flex items-center gap-2 text-xs text-muted mb-4">
-                <Link href={`/courses/${params.slug}`} className="hover:text-white transition-colors">{course.title}</Link>
+                <Link href={`/courses/${params.slug}`} className={`hover:text-white ${btn}`}>{course.title}</Link>
                 <span>&#8250;</span><span>{currentMod?.title}</span>
               </div>
               <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -287,6 +328,7 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
             </div>
           </div>
 
+          {/* Sections */}
           {sections.map((section: any, si: number) => (
             <div key={si} className="rounded-2xl border border-border bg-card overflow-hidden">
               <div className="p-6 md:p-8 space-y-5">
@@ -296,8 +338,7 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
                 </div>
                 {Array.isArray(section.body)
                   ? <div className="space-y-3">{section.body.map((p: string, pi: number) => <p key={pi} className="text-muted text-sm leading-relaxed">{p}</p>)}</div>
-                  : <p className="text-muted text-sm leading-relaxed">{section.body}</p>
-                }
+                  : <p className="text-muted text-sm leading-relaxed">{section.body}</p>}
                 {section.code && <CodeBlock block={section.code} color={course.color} />}
                 {section.examples?.length > 0 && (
                   <div className="space-y-4">
@@ -330,20 +371,22 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
           {quiz.length > 0 && <QuizBlock questions={quiz} color={course.color} />}
           {chapterQ?.length > 0 && <QuizBlock questions={chapterQ} color={course.color} title="\uD83C\uDFC6 Chapter Quiz" isChapter={true} />}
 
+          {/* Navigation */}
           <div className="flex items-center justify-between pt-2 pb-10 gap-4">
             {prevL ? (
               <Link href={`/courses/${params.slug}/lessons/${prevL.id}`}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-card text-sm text-muted hover:text-white hover:border-accent transition-all min-w-0 flex-1 max-w-xs">
+                className={`flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-card text-sm text-muted hover:text-white hover:border-accent min-w-0 flex-1 max-w-xs ${btn}`}>
                 <span className="flex-shrink-0">&#8592;</span><span className="truncate">{prevL.title}</span>
               </Link>
             ) : (
-              <Link href={`/courses/${params.slug}`} className="flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-card text-sm text-muted hover:text-white transition-all">
+              <Link href={`/courses/${params.slug}`}
+                className={`flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-card text-sm text-muted hover:text-white hover:border-accent ${btn}`}>
                 &#8592; Overview
               </Link>
             )}
             {nextL && (
               <Link href={`/courses/${params.slug}/lessons/${nextL.id}`}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all hover:brightness-110 min-w-0 flex-1 max-w-xs justify-end"
+                className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm hover:brightness-110 min-w-0 flex-1 max-w-xs justify-end ${btn}`}
                 style={{ background: `linear-gradient(135deg,${course.color},${course.color}cc)`, color: "#0D0D0F" }}>
                 <span className="truncate">{nextL.title}</span><span className="flex-shrink-0">&#8594;</span>
               </Link>
