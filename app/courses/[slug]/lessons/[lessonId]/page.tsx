@@ -4,6 +4,7 @@ import { getLessonContent  } from "@/lib/lesson-content";
 import { getLessonContent2 } from "@/lib/lesson-content-2";
 import { getLessonContent3 } from "@/lib/lesson-content-3";
 import { getLessonContent4 } from "@/lib/lesson-content-4";
+import { getLessonContent5 } from "@/lib/lesson-content-5";
 import type { QuizQuestion } from "@/lib/lesson-content-2";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -206,7 +207,8 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
   const course = getCourse(params.slug);
   if (!course) notFound();
 
-  const lesson = getLessonContent4(params.lessonId)
+  const lesson = getLessonContent5(params.lessonId)
+    ?? getLessonContent4(params.lessonId)
     ?? getLessonContent3(params.lessonId)
     ?? getLessonContent(params.lessonId)
     ?? getLessonContent2(params.lessonId);
@@ -222,7 +224,7 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
   const chapterQ   = (lesson as any).chapterQuiz;
 
   const hasContent = (id: string) =>
-    !!(getLessonContent4(id) ?? getLessonContent3(id) ?? getLessonContent(id) ?? getLessonContent2(id));
+    !!(getLessonContent5(id) ?? getLessonContent4(id) ?? getLessonContent3(id) ?? getLessonContent(id) ?? getLessonContent2(id));
 
   return (
     <div className="min-h-screen pt-16" style={{ background: "#0D0D0F" }}>
