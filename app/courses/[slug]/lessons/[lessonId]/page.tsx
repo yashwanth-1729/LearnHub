@@ -6,6 +6,7 @@ import { getLessonContent3 } from "@/lib/lesson-content-3";
 import { getLessonContent4 } from "@/lib/lesson-content-4";
 import { getLessonContent5 } from "@/lib/lesson-content-5";
 import { getLessonContent6 } from "@/lib/lesson-content-6";
+import { getLessonContent7 } from "@/lib/lesson-content-7";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
@@ -52,7 +53,7 @@ function McqQ({ q, idx, submitted, answer, onAnswer, onClear, color }: any) {
   return (
     <div className="space-y-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+        <p className="text-sm font-semibold" style={{color:"#E8EAF0"}}>{idx + 1}. {q.q}</p>
         {answer !== undefined && !submitted && (
           <button onClick={onClear} className={`text-xs px-2 py-0.5 rounded border border-border text-muted hover:text-white hover:border-red-500 flex-shrink-0 ${btn}`} style={{ cursor: "none" }}>
             Clear
@@ -84,7 +85,7 @@ function TfQ({ q, idx, submitted, answer, onAnswer, onClear, color }: any) {
   return (
     <div className="space-y-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+        <p className="text-sm font-semibold" style={{color:"#E8EAF0"}}>{idx + 1}. {q.q}</p>
         {answer !== undefined && !submitted && (
           <button onClick={onClear} className={`text-xs px-2 py-0.5 rounded border border-border text-muted hover:text-white hover:border-red-500 flex-shrink-0 ${btn}`} style={{ cursor: "none" }}>Clear</button>
         )}
@@ -114,7 +115,7 @@ function FillQ({ q, idx, submitted, answer, onAnswer, onClear, color }: any) {
   return (
     <div className="space-y-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+        <p className="text-sm font-semibold" style={{color:"#E8EAF0"}}>{idx + 1}. {q.q}</p>
         {answer && !submitted && (
           <button onClick={onClear} className={`text-xs px-2 py-0.5 rounded border border-border text-muted hover:text-white hover:border-red-500 flex-shrink-0 ${btn}`} style={{ cursor: "none" }}>Clear</button>
         )}
@@ -138,7 +139,7 @@ function PredictQ({ q, idx, submitted, answer, onAnswer, onClear, color }: any) 
   return (
     <div className="space-y-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-semibold text-white">{idx + 1}. {q.q}</p>
+        <p className="text-sm font-semibold" style={{color:"#E8EAF0"}}>{idx + 1}. {q.q}</p>
         {answer && !submitted && (
           <button onClick={onClear} className={`text-xs px-2 py-0.5 rounded border border-border text-muted hover:text-white hover:border-red-500 flex-shrink-0 ${btn}`} style={{ cursor: "none" }}>Clear</button>
         )}
@@ -242,6 +243,7 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
   if (!course) notFound();
 
   const lesson =
+    getLessonContent7(params.lessonId) ??
     getLessonContent6(params.lessonId) ??
     getLessonContent5(params.lessonId) ??
     getLessonContent4(params.lessonId) ??
@@ -260,7 +262,7 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
   const chapterQ   = (lesson as any).chapterQuiz;
 
   const hasContent = (id: string) =>
-    !!(getLessonContent6(id) ?? getLessonContent5(id) ?? getLessonContent4(id) ??
+    !!(getLessonContent7(id) ?? getLessonContent6(id) ?? getLessonContent5(id) ?? getLessonContent4(id) ??
        getLessonContent3(id) ?? getLessonContent(id)  ?? getLessonContent2(id));
 
   return (
@@ -290,7 +292,7 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
                         style={active ? { color: course.color, background: `${course.color}10`, borderLeft: `2px solid ${course.color}` } : {}}>
                         <span className="flex-shrink-0 w-4 text-center" style={{ color: active ? course.color : "#5A5A70" }}>{active ? "\u25B6" : j+1}</span>
                         <span className="leading-snug flex-1">{l.title}</span>
-                        <span className="font-mono flex-shrink-0 text-xs" style={{ color: "#5A5A70" }}>{l.duration}</span>
+                        <span className="font-mono flex-shrink-0 text-xs" style={{ color: "#8B8FA8" }}>{l.duration}</span>
                       </Link>
                     ) : (
                       <div key={l.id} className="flex items-center gap-2 px-4 py-2.5 text-xs border-b border-border/30 opacity-35 cursor-not-allowed">
@@ -318,7 +320,7 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
                   <h1 className="font-display font-extrabold text-2xl md:text-3xl text-white mb-3 leading-tight">{(lesson as any).title}</h1>
-                  <p className="text-muted text-sm leading-relaxed max-w-2xl">{(lesson as any).intro}</p>
+                  <p className="text-sm leading-relaxed max-w-2xl" style={{color:"#C9CDD4"}}>{(lesson as any).intro}</p>
                 </div>
                 <div className="flex flex-col items-end gap-2 flex-shrink-0">
                   <span className="text-xs font-mono text-muted bg-surface border border-border px-2.5 py-1 rounded-lg">{(lesson as any).duration}</span>
@@ -337,8 +339,8 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
                   <h2 className="font-display font-bold text-xl text-white">{section.heading}</h2>
                 </div>
                 {Array.isArray(section.body)
-                  ? <div className="space-y-3">{section.body.map((p: string, pi: number) => <p key={pi} className="text-muted text-sm leading-relaxed">{p}</p>)}</div>
-                  : <p className="text-muted text-sm leading-relaxed">{section.body}</p>}
+                  ? <div className="space-y-3">{section.body.map((p: string, pi: number) => <p key={pi} className="text-sm leading-relaxed" style={{color:"#C9CDD4"}}>{p}</p>)}</div>
+                  : <p className="text-sm leading-relaxed" style={{color:"#C9CDD4"}}>{section.body}</p>}
                 {section.code && <CodeBlock block={section.code} color={course.color} />}
                 {section.examples?.length > 0 && (
                   <div className="space-y-4">
