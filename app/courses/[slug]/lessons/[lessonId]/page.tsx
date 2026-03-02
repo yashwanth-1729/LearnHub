@@ -1,4 +1,5 @@
 "use client";
+import { LessonCompletion } from "@/components/LessonCompletion";
 import { getCourse } from "@/lib/courses";
 import { getLessonContent  } from "@/lib/lesson-content";
 import { getLessonContent2 } from "@/lib/lesson-content-2";
@@ -372,6 +373,11 @@ export default function LessonPage({ params }: { params: { slug: string; lessonI
 
           {quiz.length > 0 && <QuizBlock questions={quiz} color={course.color} />}
           {chapterQ?.length > 0 && <QuizBlock questions={chapterQ} color={course.color} title="\uD83C\uDFC6 Chapter Quiz" isChapter={true} />}
+
+          {/* Lesson Completion */}
+          <div className="flex justify-end pt-2">
+            <LessonCompletion lessonId={params.lessonId} />
+          </div>
 
           {/* Navigation */}
           <div className="flex items-center justify-between pt-2 pb-10 gap-4">
